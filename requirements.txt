@@ -1,0 +1,15 @@
+# Dependencias del microservicio de logica difusa (RCI-01)
+#
+#   python -m pip install -r app\Ia\requirements.txt
+#
+# scikit-fuzzy aporta el motor de inferencia difusa; scipy y networkx son
+# dependencias obligatorias de esa libreria; flask expone la API HTTP y
+# mysql-connector-python permite leer el perfil financiero del prospecto.
+
+scikit-fuzzy>=0.9.0
+scipy>=1.10
+networkx>=3.0
+flask>=3.0
+flask-cors>=4.0
+mysql-connector-python>=8.0
+numpy>=1.24
