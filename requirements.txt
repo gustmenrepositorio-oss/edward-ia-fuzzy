@@ -10,5 +10,7 @@ Flask==3.0.3
 flask-cors==4.0.1
 gunicorn==23.0.0
 numpy==1.26.4
+scipy==1.11.4
+networkx==3.2.1
 scikit-fuzzy==0.5.0
 mysql-connector-python==8.4.0
