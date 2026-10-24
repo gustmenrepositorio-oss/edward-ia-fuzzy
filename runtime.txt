@@ -1,2 +1,1 @@
-git config user.email "gustmenrepositorio@gmail.com"
-git config user.name "gustmenrepositorio-oss"
+python-3.11.9
