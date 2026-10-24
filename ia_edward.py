@@ -24,7 +24,6 @@ Configuracion por variables de entorno (opcionales):
 """
 
 import os
-
 import mysql.connector
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -32,7 +31,13 @@ from flask_cors import CORS
 import sistema_difuso
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=[
+    "https://edwardaccesorios.alwaysdata.net",
+    "https://edwardaccesorios-intranet.alwaysdata.net",
+    "http://127.0.0.1:8080",
+    "http://localhost:8080"
+])
+
 
 DB_HOST = os.environ.get('IA_DB_HOST', '127.0.0.1')
 DB_PORT = int(os.environ.get('IA_DB_PORT', '3306'))
@@ -53,14 +58,19 @@ def _conectar():
 
 
 def _perfil_financiero(cedula):
-    """Lee el perfil financiero del prospecto."""
+    """Lee el perfil financiero del prospecto asegurando el formato de la cedula."""
+    # Si la cedula viene limpia (solo numeros), le agregamos el prefijo 'V-'
+    cedula_str = str(cedula).strip()
+    if cedula_str and not cedula_str.startswith('V-'):
+        cedula_str = f"V-{cedula_str}"
+
     conn = _conectar()
     try:
         cursor = conn.cursor(dictionary=True)
         cursor.execute(
             "SELECT ingresos_mensuales, score_credito "
             "FROM perfiles_financiamiento WHERE cedula_persona = %s",
-            (cedula,)
+            (cedula_str,)
         )
         return cursor.fetchone()
     finally:
