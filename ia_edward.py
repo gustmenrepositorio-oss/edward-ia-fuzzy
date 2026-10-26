@@ -45,16 +45,33 @@ DB_USER = os.environ.get('IA_DB_USER', 'root')
 DB_PASSWORD = os.environ.get('IA_DB_PASSWORD', '')
 DB_NAME = os.environ.get('IA_DB_NAME', 'sistema_edward')
 
+# Cifrado de la conexion MySQL (TLS).
+#   IA_DB_SSL      -> 'true' activa TLS. En local se deja sin definir (XAMPP no
+#                     tiene certificados y la conexion local no sale a internet).
+#   IA_DB_SSL_CA   -> ruta al certificado de la autoridad (opcional). Si se
+#                     indica, ademas de cifrar se valida el certificado del
+#                     servidor. En Render existe /etc/ssl/certs/ca-certificates.crt
+IA_DB_SSL = os.environ.get('IA_DB_SSL', '').strip().lower() in ('1', 'true', 'yes', 'si', 'sí')
+IA_DB_SSL_CA = os.environ.get('IA_DB_SSL_CA', '').strip()
+
 
 def _conectar():
-    """Conexion a la base de datos del sistema."""
-    return mysql.connector.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME
-    )
+    """Conexion a la base de datos del sistema (cifrada si IA_DB_SSL esta activo)."""
+    opciones = {
+        'host': DB_HOST,
+        'port': DB_PORT,
+        'user': DB_USER,
+        'password': DB_PASSWORD,
+        'database': DB_NAME,
+    }
+
+    if IA_DB_SSL:
+        opciones['ssl_disabled'] = False
+        if IA_DB_SSL_CA:
+            opciones['ssl_ca'] = IA_DB_SSL_CA
+            opciones['ssl_verify_cert'] = True
+
+    return mysql.connector.connect(**opciones)
 
 
 def _perfil_financiero(cedula):
