@@ -71,7 +71,19 @@ def _conectar():
             opciones['ssl_ca'] = IA_DB_SSL_CA
             opciones['ssl_verify_cert'] = True
 
-    return mysql.connector.connect(**opciones)
+    conn = mysql.connector.connect(**opciones)
+
+    if IA_DB_SSL:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SHOW STATUS LIKE 'Ssl_cipher'")
+            fila = cursor.fetchone()
+            cursor.close()
+            print('MySQL TLS: %s' % (fila[1] if fila else 'desconocido'), flush=True)
+        except Exception as error:
+            print('MySQL TLS: no se pudo verificar (%s)' % error, flush=True)
+
+    return conn
 
 
 def _perfil_financiero(cedula):
